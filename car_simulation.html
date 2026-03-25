@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kerala Accident Hotspot Alert System</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map { height: 600px; width: 800px; }
+        .vehicle-icon {
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Kerala Accident Hotspot Alert System</h2>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
+    <script>
+        // Initialize the map centered on Kerala
+        const map = L.map('map').setView([10.8505, 76.2711], 7);
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Hotspot locations
+        const hotspots = [
+            { lat: 8.879061, lng: 76.676438 },
+            { lat: 10.260898, lng: 76.356586 },
+            { lat: 11.186534, lng: 75.851985 },
+            { lat: 9.385539, lng: 76.575131 },
+            { lat: 8.479489, lng: 76.947180 },
+            { lat: 9.960216, lng: 76.305013 },
+            { lat: 10.526105, lng: 76.210031 },
+            { lat: 9.095106, lng: 76.524909 },
+            { lat: 9.591145, lng: 76.528047 },
+            { lat: 10.109595, lng: 76.346177 },
+            { lat: 9.242279, lng: 76.811301 },
+            { lat: 11.664126, lng: 76.262449 },
+            { lat: 8.714130, lng: 76.799807 },
+            { lat: 9.363624, lng: 76.363406 },
+            { lat: 10.842810, lng: 76.030021 },
+            { lat: 9.867508, lng: 76.721289 },
+            { lat: 10.740233, lng: 76.648475 },
+            { lat: 9.758165, lng: 76.317818 },
+            { lat: 11.407961, lng: 75.716874 },
+            { lat: 9.286177, lng: 76.444393 },
+            { lat: 11.266709, lng: 75.806833 },
+            { lat: 8.981437, lng: 76.536455 },
+            { lat: 9.624318, lng: 76.331696 },
+            { lat: 9.109906, lng: 76.748728 },
+            { lat: 10.137260, lng: 76.458728 },
+            { lat: 9.713148, lng: 76.552347 },
+            { lat: 10.588418, lng: 76.153187 },
+            { lat: 8.898039, lng: 76.860597 },
+            { lat: 10.035957, lng: 76.309049 },
+            { lat: 10.249388, lng: 76.225268 },
+            { lat: 8.445810, lng: 77.016853 },
+            { lat: 9.990131, lng: 76.573239 },
+            { lat: 8.553361, lng: 76.878672 },
+            { lat: 8.901294, lng: 76.596944 },
+            { lat: 9.223910, lng: 76.632818 },
+            { lat: 9.475804, lng: 76.531156 },
+            { lat: 9.464236, lng: 76.341356 },
+            { lat: 8.809904, lng: 76.761119 },
+            { lat: 10.453862, lng: 76.087571 },
+            { lat: 10.674909, lng: 76.080709 },
+            { lat: 8.699117, lng: 76.907556 },
+            { lat: 10.916568, lng: 75.923225 },
+            { lat: 9.713100, lng: 76.683324 },
+            { lat: 9.186065, lng: 76.505510 },
+            { lat: 9.430926, lng: 76.694772 },
+            { lat: 10.442210, lng: 76.245728 },
+            { lat: 9.851242, lng: 76.307394 },
+            { lat: 10.130435, lng: 76.239051 },
+            { lat: 9.018394, lng: 76.928397 },
+            { lat: 8.539568, lng: 76.941380 }
+        ];
+
+        // Nearest hospital locations (updated with provided data)
+        const hospitals = [
+            { lat: 8.866118, lng: 76.680730 },
+            { lat: 10.261823, lng: 76.352572 },
+            { lat: 11.177240, lng: 75.866653 },
+            { lat: 9.387041, lng: 76.576318 },
+            { lat: 8.487510, lng: 76.948628 },
+            { lat: 9.953338, lng: 76.296658 },
+            { lat: 10.530190, lng: 76.211988 },
+            { lat: 9.109664, lng: 76.517848 },
+            { lat: 9.590657, lng: 76.526054 },
+            { lat: 10.107228, lng: 76.350176 },
+            { lat: 9.266749, lng: 76.806945 },
+            { lat: 11.665839, lng: 76.262389 },
+            { lat: 8.700241, lng: 76.814679 },
+            { lat: 9.383178, lng: 76.353220 },
+            { lat: 10.854681, lng: 76.037121 },
+            { lat: 9.835423, lng: 76.744215 },
+            { lat: 10.757647, lng: 76.638137 },
+            { lat: 9.771057, lng: 76.317818 },
+            { lat: 11.421871, lng: 75.724852 },
+            { lat: 9.283649, lng: 76.442737 },
+            { lat: 11.269040, lng: 75.809312 },
+            { lat: 8.976976, lng: 76.534741 },
+            { lat: 9.603666, lng: 76.320822 },
+            { lat: 9.149581, lng: 76.761851 },
+            { lat: 10.115397, lng: 76.470135 },
+            { lat: 9.715200, lng: 76.558889 },
+            { lat: 10.570077, lng: 76.164156 },
+            { lat: 8.899464, lng: 76.861539 },
+            { lat: 10.030714, lng: 76.304888 },
+            { lat: 10.233240, lng: 76.193956 },
+            { lat: 8.449993, lng: 77.009400 },
+            { lat: 9.990490, lng: 76.576759 },
+            { lat: 8.541005, lng: 76.878525 },
+            { lat: 8.890331, lng: 76.598020 },
+            { lat: 9.244890, lng: 76.613355 },
+            { lat: 9.481275, lng: 76.514311 },
+            { lat: 9.463359, lng: 76.330794 },
+            { lat: 8.831924, lng: 76.747228 },
+            { lat: 10.461391, lng: 76.084764 },
+            { lat: 10.648426, lng: 76.066156 },
+            { lat: 8.664800, lng: 76.912199 },
+            { lat: 10.912450, lng: 75.922445 },
+            { lat: 9.711574, lng: 76.680556 },
+            { lat: 9.191997, lng: 76.500377 },
+            { lat: 9.438616, lng: 76.577074 },
+            { lat: 10.447342, lng: 76.249521 },
+            { lat: 9.850612, lng: 76.307497 },
+            { lat: 10.145620, lng: 76.227128 },
+            { lat: 9.018831, lng: 76.927240 },
+            { lat: 8.538063, lng: 76.929922 }
+        ];
+
+        // Add circles for each hotspot with a larger radius
+        hotspots.forEach(hotspot => {
+            L.circle([hotspot.lat, hotspot.lng], {
+                color: 'red',
+                fillColor: '#f03',
+                fillOpacity: 0.5,
+                radius: 1000 // Increased radius in meters (change as needed)
+            }).addTo(map);
+        });
+
+        // Add markers for each hospital
+        hospitals.forEach(hospital => {
+            L.marker([hospital.lat, hospital.lng]).addTo(map);
+        });
+
+        // Add a movable vehicle marker
+        const vehicleIcon = L.divIcon({ className: 'vehicle-icon', html: '🚗', iconSize: [20, 20] });
+        const vehicle = L.marker([10.8505, 76.2711], { icon: vehicleIcon, draggable: true }).addTo(map);
+
+        // Function to find the nearest hospital
+        function findNearestHospital(vehicleLatLng) {
+            let nearestHospital = null;
+            let minDistance = Infinity;
+
+            hospitals.forEach(hospital => {
+                const distance = map.distance(
+                    [vehicleLatLng.lat, vehicleLatLng.lng],
+                    [hospital.lat, hospital.lng]
+                );
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearestHospital = hospital;
+                }
+            });
+            return nearestHospital;
+        }
+
+        // Check if the vehicle is within a hotspot area whenever it’s moved
+        vehicle.on('move', () => {
+            const vehicleLatLng = vehicle.getLatLng();
+            hotspots.forEach(hotspot => {
+                const distance = map.distance([hotspot.lat, hotspot.lng], [vehicleLatLng.lat, vehicleLatLng.lng]);
+                if (distance < 1000) { // Adjusted to match the new circle radius
+                    const nearestHospital = findNearestHospital(vehicleLatLng);
+                    alert(`Accident Hotspot Alert!\nNearest Hospital Location: ${nearestHospital.lat}, ${nearestHospital.lng}`);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
