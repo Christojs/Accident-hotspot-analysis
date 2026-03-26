@@ -86,7 +86,6 @@ This project leverages **Machine Learning + Spatial Analysis** to automatically 
 
 * Python
 * Machine Learning (Clustering / Prediction Models)
-* JavaScript (Frontend interaction)
 * Maps API (for visualization & tracking)
 
 ---
